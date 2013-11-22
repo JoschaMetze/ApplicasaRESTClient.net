@@ -29,10 +29,11 @@ namespace ApplicasaRESTClientnet
 
         protected Uri _baseAddress = new Uri("http://api.applicasa.com/3.0/");
 
+        
         protected HttpClient _client;
         public RESTClient()
         {
-            _client = new HttpClient();
+            
         }
         protected string transformPlatform(Platforms platform)
         {
@@ -53,6 +54,7 @@ namespace ApplicasaRESTClientnet
         }
         public async Task<dynamic> Initialize(string userID = null, string facebookToken = null)
         {
+            _client = new HttpClient();
             _client.BaseAddress = _baseAddress;
             _client.DefaultRequestHeaders.Add("AppID", ApplicationID);
             _client.DefaultRequestHeaders.Add("Platform", transformPlatform(Platform));
