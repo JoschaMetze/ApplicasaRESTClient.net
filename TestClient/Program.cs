@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ApplicasaRESTClientnet;
+using System.Dynamic;
+using Newtonsoft.Json;
 
 namespace TestClient
 {

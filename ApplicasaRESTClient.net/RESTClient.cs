@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
+
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -52,7 +52,7 @@ namespace ApplicasaRESTClientnet
                     return "-1";
             }
         }
-        public async Task<dynamic> Initialize(string userID = null, string facebookToken = null)
+        public async Task<Dictionary<string,object>> Initialize(string userID = null, string facebookToken = null)
         {
             _client = new HttpClient();
             _client.BaseAddress = _baseAddress;
@@ -64,8 +64,8 @@ namespace ApplicasaRESTClientnet
             StringContent postContent = null;
             if (facebookToken != null)
             {
-                dynamic user = new ExpandoObject();
-                user.FacebookToken = userID;
+                Dictionary<string, object> user = new Dictionary<string, object>();
+                user["FacebookToken"] = userID;
                 postContent = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
             }
             else
@@ -82,13 +82,13 @@ namespace ApplicasaRESTClientnet
             else
             {
                 //read response
-                var userObject = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
-                UserID = userObject.UserID;
+                var userObject = JsonConvert.DeserializeObject<Dictionary<string,object>>(await response.Content.ReadAsStringAsync());
+                UserID = userObject["UserID"] as string;
                 return userObject;
             }
         }
         #region Login methods
-        public async Task<dynamic> RegisterWithUserNameAndPassword(string userName, string passwordHash)
+        public async Task<Dictionary<string,object>> RegisterWithUserNameAndPassword(string userName, string passwordHash)
         {
             StringContent postContent = null;
             if (String.IsNullOrWhiteSpace(userName))
@@ -97,10 +97,10 @@ namespace ApplicasaRESTClientnet
             {
                 throw new Exception("Password has to be empty string when using no password authentication");
             }
-            dynamic user = new ExpandoObject();
-            user.UserName = userName;
+            Dictionary<string, object> user = new Dictionary<string, object>();
+            user["UserName"] = userName;
             //hash
-            user.UserPassword = passwordHash;
+            user["UserPassword"] = passwordHash;
             postContent = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
 
             HttpRequestMessage msg = new HttpRequestMessage(HttpMethod.Post, "User/RegisterWithUserNameAndPassword");
@@ -115,12 +115,12 @@ namespace ApplicasaRESTClientnet
             else
             {
                 //read response
-                var userObject = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
-                UserID = userObject.UserID;
+                var userObject = JsonConvert.DeserializeObject<Dictionary<string,object>>(await response.Content.ReadAsStringAsync());
+                UserID = userObject["UserID"] as string;
                 return userObject;
             }
         }
-        public async Task<dynamic> LoginWithUserNameAndPassword(string userName, string passwordHash)
+        public async Task<Dictionary<string,object>> LoginWithUserNameAndPassword(string userName, string passwordHash)
         {
             StringContent postContent = null;
             if (String.IsNullOrWhiteSpace(userName))
@@ -130,10 +130,10 @@ namespace ApplicasaRESTClientnet
                 throw new Exception("Password has to be empty string when using no password authentication");
             }
 
-            dynamic user = new ExpandoObject();
-            user.UserName = userName;
+            Dictionary<string, object> user = new Dictionary<string, object>();
+            user["UserName"] = userName;
             //hash
-            user.UserPassword = passwordHash;
+            user["UserPassword"] = passwordHash;
             postContent = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
 
             HttpRequestMessage msg = new HttpRequestMessage(HttpMethod.Post, "User/LoginWithUserNameAndPassword");
@@ -148,8 +148,8 @@ namespace ApplicasaRESTClientnet
             else
             {
                 //read response
-                var userObject = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
-                UserID = userObject.UserID;
+                var userObject = JsonConvert.DeserializeObject<Dictionary<string,object>>(await response.Content.ReadAsStringAsync());
+                UserID = userObject["UserID"] as string;
                 return userObject;
             }
         }
@@ -160,8 +160,8 @@ namespace ApplicasaRESTClientnet
                 throw new Exception("Username has to be set");
 
 
-            dynamic user = new ExpandoObject();
-            user.UserName = userName;
+            Dictionary<string, object> user = new Dictionary<string, object>();
+            user["UserName"] = userName;
 
             postContent = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
 
@@ -186,11 +186,11 @@ namespace ApplicasaRESTClientnet
                 throw new Exception("Password has to be empty string when using no password authentication");
             }
 
-            dynamic user = new ExpandoObject();
-            user.CurrentUserName = currentUserName;
-            user.NewUserName = newUserName;
+            Dictionary<string, object> user = new Dictionary<string, object>();
+            user["CurrentUserName"] = currentUserName;
+            user["NewUserName"] = newUserName;
             //hash
-            user.UserPassword = passwordHash;
+            user["UserPassword"] = passwordHash;
             postContent = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
 
             HttpRequestMessage msg = new HttpRequestMessage(HttpMethod.Post, "User/ChangeUserName");
@@ -214,12 +214,12 @@ namespace ApplicasaRESTClientnet
                 throw new Exception("Password has to be empty string when using no password authentication");
             }
 
-            dynamic user = new ExpandoObject();
-            user.UserName = userName;
+            Dictionary<string, object> user = new Dictionary<string, object>();
+            user["UserName"] = userName;
 
             //hash
-            user.CurrentUserPassword = passwordHash;
-            user.NewUserPassword = newPasswordHash;
+            user["CurrentUserPassword"] = passwordHash;
+            user["NewUserPassword"] = newPasswordHash;
             postContent = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
 
             HttpRequestMessage msg = new HttpRequestMessage(HttpMethod.Post, "User/ChangeUserPassword");
@@ -243,10 +243,10 @@ namespace ApplicasaRESTClientnet
                 throw new Exception("Password has to be empty string when using no password authentication");
             }
 
-            dynamic user = new ExpandoObject();
-            user.UserName = userName;
+            Dictionary<string, object> user = new Dictionary<string, object>();
+            user["UserName"] = userName;
             //hash
-            user.UserPassword = passwordHash;
+            user["UserPassword"] = passwordHash;
             postContent = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
 
             HttpRequestMessage msg = new HttpRequestMessage(HttpMethod.Post, "User/RemoveUserNameAndPassword");
@@ -271,15 +271,15 @@ namespace ApplicasaRESTClientnet
          * and then run this method again on the current user.
          */
 
-        public async Task<dynamic> LoginWithFacebook(string facebookToken)
+        public async Task<Dictionary<string,object>> LoginWithFacebook(string facebookToken)
         {
             StringContent postContent = null;
             if (String.IsNullOrWhiteSpace(facebookToken))
                 throw new Exception("Facebook token has to be set");
 
 
-            dynamic user = new ExpandoObject();
-            user.FacebookToken = facebookToken;
+            Dictionary<string, object> user = new Dictionary<string, object>();
+            user["FacebookToken"] = facebookToken;
             //hash
 
             postContent = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
@@ -296,19 +296,19 @@ namespace ApplicasaRESTClientnet
             else
             {
                 //read response
-                var userObject = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
+                var userObject = JsonConvert.DeserializeObject<Dictionary<string,object>>(await response.Content.ReadAsStringAsync());
                 return userObject;
             }
         }
-        public async Task<dynamic> FindFacebookFriends(string facebookToken)
+        public async Task<Dictionary<string,object>> FindFacebookFriends(string facebookToken)
         {
             StringContent postContent = null;
             if (String.IsNullOrWhiteSpace(facebookToken))
                 throw new Exception("Facebook token has to be set");
 
 
-            dynamic user = new ExpandoObject();
-            user.FacebookToken = facebookToken;
+            Dictionary<string, object> user = new Dictionary<string, object>();
+            user["FacebookToken"] = facebookToken;
             //hash
 
             postContent = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
@@ -325,11 +325,11 @@ namespace ApplicasaRESTClientnet
             else
             {
                 //read response
-                var userObject = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
+                var userObject = JsonConvert.DeserializeObject<Dictionary<string,object>>(await response.Content.ReadAsStringAsync());
                 return userObject;
             }
         }
-        public async Task<dynamic> DisconnectFacebook()
+        public async Task<Dictionary<string,object>> DisconnectFacebook()
         {
             StringContent postContent = null;
 
@@ -348,13 +348,13 @@ namespace ApplicasaRESTClientnet
             else
             {
                 //read response
-                var userObject = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
+                var userObject = JsonConvert.DeserializeObject<Dictionary<string,object>>(await response.Content.ReadAsStringAsync());
                 return userObject;
             }
         }
         #endregion
         #region Backend
-        public async Task<dynamic> CreateObject(string objectName, dynamic valueObject)
+        public async Task<Dictionary<string,object>> CreateObject(string objectName, Dictionary<string,object> valueObject)
         {
             StringContent postContent = null;
             if (String.IsNullOrWhiteSpace(objectName))
@@ -376,11 +376,11 @@ namespace ApplicasaRESTClientnet
             else
             {
                 //read response
-                var userObject = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
+                var userObject = JsonConvert.DeserializeObject<Dictionary<string,object>>(await response.Content.ReadAsStringAsync());
                 return userObject;
             }
         }
-        public async Task<bool> UpdateObject(string objectName, string recordID, dynamic changedValuesObject)
+        public async Task<bool> UpdateObject(string objectName, string recordID, Dictionary<string,object> changedValuesObject)
         {
             StringContent postContent = null;
             if (String.IsNullOrWhiteSpace(objectName))
@@ -429,11 +429,11 @@ namespace ApplicasaRESTClientnet
                 return true;
             }
         }
-        public async Task<dynamic> GetObject(string objectName, string recordID, List<string> foreignKeys)
+        public async Task<Dictionary<string,object>> GetObject(string objectName, string recordID, List<string> foreignKeys)
         {
             return await getObject(objectName, recordID, foreignKeys);
         }
-        protected async Task<dynamic> getObject(string objectName, string recordID, List<string> foreignKeys, Dictionary<string, object> additionalParameters = null)
+        protected async Task<Dictionary<string,object>> getObject(string objectName, string recordID, List<string> foreignKeys, Dictionary<string, object> additionalParameters = null)
         {
 
             if (String.IsNullOrWhiteSpace(objectName))
@@ -461,15 +461,15 @@ namespace ApplicasaRESTClientnet
             }
 
             //read response
-            var userObject = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
+            var userObject = JsonConvert.DeserializeObject<Dictionary<string,object>>(await response.Content.ReadAsStringAsync());
             return userObject;
 
         }
-        public async Task<dynamic> GetObject(string objectName, dynamic query = null, int limit = 100, int offset = 0, List<string> foreignKeys = null, List<string> orderBy = null)
+        public async Task<Dictionary<string,object>> GetObject(string objectName, Dictionary<string,object> query = null, int limit = 100, int offset = 0, List<string> foreignKeys = null, List<string> orderBy = null)
         {
             return await getObject(objectName, query, limit, offset, foreignKeys, orderBy);
         }
-        protected async Task<dynamic> getObject(string objectName, dynamic query = null, int limit = 100, int offset = 0, List<string> foreignKeys = null, List<string> orderBy = null, Dictionary<string, object> additionalParameters = null)
+        protected async Task<Dictionary<string,object>> getObject(string objectName, Dictionary<string,object> query = null, int limit = 100, int offset = 0, List<string> foreignKeys = null, List<string> orderBy = null, Dictionary<string, object> additionalParameters = null)
         {
 
             if (String.IsNullOrWhiteSpace(objectName))
@@ -507,17 +507,17 @@ namespace ApplicasaRESTClientnet
             else
             {
                 //read response
-                var userObject = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
+                var userObject = JsonConvert.DeserializeObject<Dictionary<string,object>>(await response.Content.ReadAsStringAsync());
                 return userObject;
             }
         }
         #endregion
         #region virtual currency
-        public async Task<dynamic> GetVirtualCurrency(dynamic query = null, int limit = 100, int offset = 0, List<string> foreignKeys = null, List<string> orderBy = null)
+        public async Task<Dictionary<string,object>> GetVirtualCurrency(Dictionary<string,object> query = null, int limit = 100, int offset = 0, List<string> foreignKeys = null, List<string> orderBy = null)
         {
             return await GetObject("VirtualCurrency", query, limit, offset, foreignKeys, orderBy);
         }
-        public async Task<dynamic> BuyVirtualCurrency(string currencyId, string receipt, string inAppPurchaseData = null)
+        public async Task<Dictionary<string,object>> BuyVirtualCurrency(string currencyId, string receipt, string inAppPurchaseData = null)
         {
             StringContent postContent = null;
             if (String.IsNullOrWhiteSpace(currencyId))
@@ -526,11 +526,11 @@ namespace ApplicasaRESTClientnet
                 throw new Exception("receipt has to be set");
             if (String.IsNullOrWhiteSpace(inAppPurchaseData) && Platform == Platforms.Android)
                 throw new Exception("inAppPurchaseData has to be set for the android platform");
-            dynamic currency = new ExpandoObject();
-            currency.VirtualCurrencyID = currencyId;
-            currency.Receipt = receipt;
+            Dictionary<string, object> currency = new Dictionary<string, object>();
+            currency["VirtualCurrencyID"] = currencyId;
+            currency["Receipt"] = receipt;
             if (Platform == Platforms.Android)
-                currency.InAppPurchaseData = inAppPurchaseData;
+                currency["InAppPurchaseData"] = inAppPurchaseData;
 
 
             postContent = new StringContent(JsonConvert.SerializeObject(currency), Encoding.UTF8, "application/json");
@@ -547,11 +547,11 @@ namespace ApplicasaRESTClientnet
             else
             {
                 //read response
-                var userObject = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
+                var userObject = JsonConvert.DeserializeObject<Dictionary<string,object>>(await response.Content.ReadAsStringAsync());
                 return userObject;
             }
         }
-        public async Task<dynamic> GiveVirtualCurrency(Currencies currency, int amount, string receipt)
+        public async Task<Dictionary<string,object>> GiveVirtualCurrency(Currencies currency, int amount, string receipt)
         {
             StringContent postContent = null;
             if (amount <= 0)
@@ -559,11 +559,11 @@ namespace ApplicasaRESTClientnet
             if (String.IsNullOrWhiteSpace(receipt))
                 throw new Exception("receipt has to be set");
 
-            dynamic currencyObject = new ExpandoObject();
+            Dictionary<string, object> currencyObject = new Dictionary<string, object>();
 
-            currencyObject.VirtualCurrencyKind = currency == Currencies.Main ? 1 : 2;
-            currencyObject.Receipt = receipt;
-            currencyObject.Amount = amount;
+            currencyObject["VirtualCurrencyKind"] = currency == Currencies.Main ? 1 : 2;
+            currencyObject["Receipt"] = receipt;
+            currencyObject["Amount"] = amount;
 
 
             postContent = new StringContent(JsonConvert.SerializeObject(currencyObject), Encoding.UTF8, "application/json");
@@ -580,11 +580,11 @@ namespace ApplicasaRESTClientnet
             else
             {
                 //read response
-                var userObject = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
+                var userObject = JsonConvert.DeserializeObject<Dictionary<string,object>>(await response.Content.ReadAsStringAsync());
                 return userObject;
             }
         }
-        public async Task<dynamic> UseVirtualCurrency(Currencies currency, int amount, string receipt)
+        public async Task<Dictionary<string,object>> UseVirtualCurrency(Currencies currency, int amount, string receipt)
         {
             StringContent postContent = null;
             if (amount <= 0)
@@ -592,11 +592,11 @@ namespace ApplicasaRESTClientnet
             if (String.IsNullOrWhiteSpace(receipt))
                 throw new Exception("receipt has to be set");
 
-            dynamic currencyObject = new ExpandoObject();
+            Dictionary<string, object> currencyObject = new Dictionary<string, object>();
 
-            currencyObject.VirtualCurrencyKind = currency == Currencies.Main ? 1 : 2;
-            currencyObject.Receipt = receipt;
-            currencyObject.Amount = amount;
+            currencyObject["VirtualCurrencyKind"] = currency == Currencies.Main ? 1 : 2;
+            currencyObject["Receipt"] = receipt;
+            currencyObject["Amount"] = amount;
 
 
             postContent = new StringContent(JsonConvert.SerializeObject(currencyObject), Encoding.UTF8, "application/json");
@@ -613,13 +613,13 @@ namespace ApplicasaRESTClientnet
             else
             {
                 //read response
-                var userObject = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
+                var userObject = JsonConvert.DeserializeObject<Dictionary<string,object>>(await response.Content.ReadAsStringAsync());
                 return userObject;
             }
         }
         #endregion
         #region virtual goods
-        public async Task<dynamic> GetVirtualGood(bool includeUserInventory = false, int? byCategoryPosition = null, dynamic query = null, int limit = 100, int offset = 0, List<string> foreignKeys = null, List<string> orderBy = null)
+        public async Task<Dictionary<string,object>> GetVirtualGood(bool includeUserInventory = false, int? byCategoryPosition = null, Dictionary<string,object> query = null, int limit = 100, int offset = 0, List<string> foreignKeys = null, List<string> orderBy = null)
         {
             Dictionary<string, object> param = new Dictionary<string, object>();
             param.Add("includeUserInventory", includeUserInventory);
@@ -630,7 +630,7 @@ namespace ApplicasaRESTClientnet
             return await getObject("VirtualGood", query, limit, offset, foreignKeys, orderBy, param);
         }
 
-        public async Task<dynamic> BuyVirtualGoodWithCurrency(string virtualGoodId, Currencies currency, int amount, string receipt)
+        public async Task<Dictionary<string,object>> BuyVirtualGoodWithCurrency(string virtualGoodId, Currencies currency, int amount, string receipt)
         {
             StringContent postContent = null;
             if (amount <= 0)
@@ -640,11 +640,11 @@ namespace ApplicasaRESTClientnet
             if (String.IsNullOrWhiteSpace(virtualGoodId))
                 throw new Exception("virtual good id has to be set");
 
-            dynamic currencyObject = new ExpandoObject();
-            currencyObject.VirtualGoodID = virtualGoodId;
-            currencyObject.VirtualCurrencyKind = currency == Currencies.Main ? 1 : 2;
-            currencyObject.Receipt = receipt;
-            currencyObject.Amount = amount;
+            Dictionary<string, object> currencyObject = new Dictionary<string, object>();
+            currencyObject["VirtualGoodID"] = virtualGoodId;
+            currencyObject["VirtualCurrencyKind"] = currency == Currencies.Main ? 1 : 2;
+            currencyObject["Receipt"] = receipt;
+            currencyObject["Amount"] = amount;
 
 
             postContent = new StringContent(JsonConvert.SerializeObject(currencyObject), Encoding.UTF8, "application/json");
@@ -661,11 +661,11 @@ namespace ApplicasaRESTClientnet
             else
             {
                 //read response
-                var userObject = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
+                var userObject = JsonConvert.DeserializeObject<Dictionary<string,object>>(await response.Content.ReadAsStringAsync());
                 return userObject;
             }
         }
-        public async Task<dynamic> BuyVirtualGood(string virtualGoodId, string receipt, string inAppPurchaseData = null)
+        public async Task<Dictionary<string,object>> BuyVirtualGood(string virtualGoodId, string receipt, string inAppPurchaseData = null)
         {
             StringContent postContent = null;
             if (String.IsNullOrWhiteSpace(virtualGoodId))
@@ -674,12 +674,12 @@ namespace ApplicasaRESTClientnet
                 throw new Exception("receipt has to be set");
             if (String.IsNullOrWhiteSpace(inAppPurchaseData) && Platform == Platforms.Android)
                 throw new Exception("inAppPurchaseData has to be set for the android platform");
-            dynamic currency = new ExpandoObject();
-            currency.VirtualCurrencyID = virtualGoodId;
-            currency.VirtualCurrencyKind = 3; //real money
-            currency.Receipt = receipt;
+            Dictionary<string, object> currency = new Dictionary<string, object>();
+            currency["VirtualCurrencyID"] = virtualGoodId;
+            currency["VirtualCurrencyKind"] = 3; //real money
+            currency["Receipt"] = receipt;
             if (Platform == Platforms.Android)
-                currency.InAppPurchaseData = inAppPurchaseData;
+                currency["InAppPurchaseData"] = inAppPurchaseData;
 
 
             postContent = new StringContent(JsonConvert.SerializeObject(currency), Encoding.UTF8, "application/json");
@@ -696,11 +696,11 @@ namespace ApplicasaRESTClientnet
             else
             {
                 //read response
-                var userObject = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
+                var userObject = JsonConvert.DeserializeObject<Dictionary<string,object>>(await response.Content.ReadAsStringAsync());
                 return userObject;
             }
         }
-        public async Task<dynamic> GiveVirtualGood(string virtualGoodId, int amount, string receipt)
+        public async Task<Dictionary<string,object>> GiveVirtualGood(string virtualGoodId, int amount, string receipt)
         {
             StringContent postContent = null;
             if (amount <= 0)
@@ -710,11 +710,11 @@ namespace ApplicasaRESTClientnet
             if (String.IsNullOrWhiteSpace(virtualGoodId))
                 throw new Exception("virtual good id has to be set");
 
-            dynamic currencyObject = new ExpandoObject();
+            Dictionary<string, object> currencyObject = new Dictionary<string, object>();
 
-            currencyObject.VirtualGoodID = virtualGoodId;
-            currencyObject.Receipt = receipt;
-            currencyObject.Amount = amount;
+            currencyObject["VirtualGoodID"] = virtualGoodId;
+            currencyObject["Receipt"] = receipt;
+            currencyObject["Amount"] = amount;
 
 
             postContent = new StringContent(JsonConvert.SerializeObject(currencyObject), Encoding.UTF8, "application/json");
@@ -731,11 +731,11 @@ namespace ApplicasaRESTClientnet
             else
             {
                 //read response
-                var userObject = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
+                var userObject = JsonConvert.DeserializeObject<Dictionary<string,object>>(await response.Content.ReadAsStringAsync());
                 return userObject;
             }
         }
-        public async Task<dynamic> UseVirtualGood(string virtualGoodId, int amount, string receipt)
+        public async Task<Dictionary<string,object>> UseVirtualGood(string virtualGoodId, int amount, string receipt)
         {
             StringContent postContent = null;
             if (amount <= 0)
@@ -745,11 +745,11 @@ namespace ApplicasaRESTClientnet
             if (String.IsNullOrWhiteSpace(virtualGoodId))
                 throw new Exception("virtual good id has to be set");
 
-            dynamic currencyObject = new ExpandoObject();
+            Dictionary<string, object> currencyObject = new Dictionary<string, object>();
 
-            currencyObject.VirtualGoodID = virtualGoodId;
-            currencyObject.Receipt = receipt;
-            currencyObject.Amount = amount;
+            currencyObject["VirtualGoodID"] = virtualGoodId;
+            currencyObject["Receipt"] = receipt;
+            currencyObject["Amount"] = amount;
 
             postContent = new StringContent(JsonConvert.SerializeObject(currencyObject), Encoding.UTF8, "application/json");
 
@@ -765,20 +765,20 @@ namespace ApplicasaRESTClientnet
             else
             {
                 //read response
-                var userObject = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
+                var userObject = JsonConvert.DeserializeObject<Dictionary<string,object>>(await response.Content.ReadAsStringAsync());
                 return userObject;
             }
         }
         #endregion
         #region virtual good categories
-        public async Task<dynamic> GetVirtualGoodCategory(bool includeUserInventory = false, bool includeVGetItems = false, dynamic query = null, int limit = 100, int offset = 0, List<string> foreignKeys = null, List<string> orderBy = null)
+        public async Task<Dictionary<string,object>> GetVirtualGoodCategory(bool includeUserInventory = false, bool includeVGetItems = false, Dictionary<string,object> query = null, int limit = 100, int offset = 0, List<string> foreignKeys = null, List<string> orderBy = null)
         {
             Dictionary<string, object> param = new Dictionary<string, object>();
             param.Add("includeVGetItems", includeVGetItems);
             param.Add("includeUserInventory", includeUserInventory);
             return await getObject("VirtualGoodCategory", query, limit, offset, foreignKeys, orderBy, param);
         }
-        public async Task<dynamic> GetVirtualGoodCategory(string categoryId, bool includeUserInventory = false, bool includeVGetItems = false, List<string> foreignKeys = null)
+        public async Task<Dictionary<string,object>> GetVirtualGoodCategory(string categoryId, bool includeUserInventory = false, bool includeVGetItems = false, List<string> foreignKeys = null)
         {
             Dictionary<string, object> param = new Dictionary<string, object>();
             param.Add("includeVGetItems", includeVGetItems);
