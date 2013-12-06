@@ -19,9 +19,9 @@ namespace ApplicasaRESTClientnet
         {
             if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
             {
-                var responseObj = JsonConvert.DeserializeObject<dynamic>(jsonResponse);
-                ErrorMessage = responseObj.ApplicasaMessage;
-                ErrorCode = responseObj.ApplicasaCode;
+				var responseObj = JsonConvert.DeserializeObject<Dictionary<string,object>>(jsonResponse);
+				ErrorMessage = responseObj["ApplicasaMessage"] as string;
+				ErrorCode = responseObj["ApplicasaCode"] as string;
             }
             else
             {
