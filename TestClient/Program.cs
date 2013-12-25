@@ -15,6 +15,7 @@ namespace TestClient
         {
             RESTClient client = new RESTClient();
             client.ApplicationID = "xxxxxx";
+            client.ApplicationKey = "xxxxxxxxxxxxxxxxxxxxxxxxx";
             client.ApplicationVersion = 1.0f;
             client.IsSandbox = true;
             client.Platform = Platforms.iOS;
