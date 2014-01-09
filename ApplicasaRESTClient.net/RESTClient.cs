@@ -21,7 +21,7 @@ namespace ApplicasaRESTClientnet
         Windows,
         WebDevices
     }
-    public class RESTClient : HttpClient
+    public class RESTClient : HttpClient, ApplicasaRESTClientnet.IRESTClient
     {
         public string ApplicationID { get; set; }
         public string ApplicationKey { get; set; }
@@ -570,6 +570,11 @@ namespace ApplicasaRESTClientnet
             {
                 //read response
                 var userObject = JsonConvert.DeserializeObject<Dictionary<string, object>>(await response.Content.ReadAsStringAsync());
+                //update userObject
+                foreach(var objectKey in userObject.Keys)
+                {
+                    _user[objectKey] = userObject[objectKey];
+                }
                 return userObject;
             }
         }
@@ -603,6 +608,11 @@ namespace ApplicasaRESTClientnet
             {
                 //read response
                 var userObject = JsonConvert.DeserializeObject<Dictionary<string, object>>(await response.Content.ReadAsStringAsync());
+                //update userObject
+                foreach (var objectKey in userObject.Keys)
+                {
+                    _user[objectKey] = userObject[objectKey];
+                }
                 return userObject;
             }
         }
@@ -636,6 +646,11 @@ namespace ApplicasaRESTClientnet
             {
                 //read response
                 var userObject = JsonConvert.DeserializeObject<Dictionary<string, object>>(await response.Content.ReadAsStringAsync());
+                //update userObject
+                foreach (var objectKey in userObject.Keys)
+                {
+                    _user[objectKey] = userObject[objectKey];
+                }
                 return userObject;
             }
         }

@@ -36,6 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="ApplicasaException.cs" />
+    <Compile Include="IRESTClient.cs" />
     <Compile Include="RESTClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="User.cs" />
