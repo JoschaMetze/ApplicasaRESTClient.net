@@ -488,6 +488,10 @@ namespace ApplicasaRESTClientnet
         {
             return await getObject(objectName, query, limit, offset, foreignKeys, orderBy);
         }
+        public async Task<Dictionary<string, object>> GetObject(string objectName, Dictionary<string, object> query = null, int limit = 100, int offset = 0, List<string> foreignKeys = null, List<string> orderBy = null, Dictionary<string, object> additionalParameters = null)
+        {
+            return await getObject(objectName, query, limit, offset, foreignKeys, orderBy,additionalParameters);
+        }
         protected async Task<Dictionary<string, object>> getObject(string objectName, Dictionary<string, object> query = null, int limit = 100, int offset = 0, List<string> foreignKeys = null, List<string> orderBy = null, Dictionary<string, object> additionalParameters = null)
         {
 
@@ -699,6 +703,11 @@ namespace ApplicasaRESTClientnet
             {
                 //read response
                 var userObject = JsonConvert.DeserializeObject<Dictionary<string, object>>(await response.Content.ReadAsStringAsync());
+                //update userObject
+                foreach (var objectKey in userObject.Keys)
+                {
+                    _user[objectKey] = userObject[objectKey];
+                }
                 return userObject;
             }
         }
